@@ -7,15 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// kaggle boardgames dataset 
-// classify the games according the playing duration (max playtime - min play time) 
-// playing duration categories: 
-// 30 - 60min (30 and above but less than 60) 
-// 60 - 120 
-// 120 - 180 
-// =>180 
-// output to show game name and published year
-
 public class Playtime {
 
     public static final int COL_NAME = 0;
@@ -29,6 +20,7 @@ public class Playtime {
         
         try (FileReader fr = new FileReader(args[0])) {
             BufferedReader br = new BufferedReader(fr);
+            
             Map<Integer, List<Games>> categorized = br.lines()
             .skip(1) //skip first line because it is the header names
             .map(row ->row.trim().split(",")) // String -> String[] - stream goes through the row one row at a time
@@ -36,7 +28,8 @@ public class Playtime {
                 columns[COL_YEAR], 
                 Integer.parseInt(columns[MIN_PLAYTIME]), // from string to integer
                 Integer.parseInt(columns[MAX_PLAYTIME])))
-            .collect(Collectors.groupingBy(game -> {
+            // Implementations of Collector that implement various useful reduction operations, such as accumulating elements into collections, summarizing elements according to various criteria, etc.
+            .collect(Collectors.groupingBy(game -> { // 
                 int dur = game.getDuration();
                 if ((30 <= dur) && (dur<60)){
                     return 0;
@@ -48,9 +41,10 @@ public class Playtime {
             }));
             
             for (int i =0; i <LABELS.length; i++){
-                System.out.printf("Duration: %s mins\n", LABELS[i]);
+                System.out.printf("\nDuration: %s mins\n", LABELS[i]);
+                System.out.printf("===============================\n");
                 for (Games g: categorized.get(i)) {
-                    System.out.printf("%s :%s\n", g.getName(), g.getYear());
+                    System.out.printf("%s: %s\n", g.getName(), g.getYear());
                 }
             }
         }
